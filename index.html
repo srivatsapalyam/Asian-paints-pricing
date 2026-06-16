@@ -47,6 +47,10 @@
                             <option value="50">DEEP ORANGE (₹50.00 colorant)</option>
                             </select>
                     </div>
+
+                    <button id="resetBtn" class="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg border border-gray-300 transition">
+                        Reset Form
+                    </button>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
@@ -119,7 +123,7 @@
     </div>
 
     <script>
-        // 1. DATA (Extracted from your PDF)
+        // 1. DATA
         const products = [
             { name: "ACE EXTERIOR EMULSION (AC2GTEL)", packs: [
                 { size: "4 LIT", price: 726.00 },
@@ -137,7 +141,7 @@
             ]}
         ];
 
-        // 2. SETTINGS MANAGEMENT (Uses LocalStorage to save your Dad's settings)
+        // 2. SETTINGS MANAGEMENT
         let settings = JSON.parse(localStorage.getItem('paintAppConfig')) || {
             baseMarkup: 6.0,
             baseTax: 18.0,
@@ -149,6 +153,7 @@
         const productSelect = document.getElementById('productSelect');
         const packSelect = document.getElementById('packSelect');
         const shadeSelect = document.getElementById('shadeSelect');
+        const resetBtn = document.getElementById('resetBtn'); // The new reset button
         
         // Output Labels
         const dealerLabel = document.getElementById('dealerPriceLabel');
@@ -164,13 +169,11 @@
 
         // 3. INITIALIZATION
         function initApp() {
-            // Load settings into inputs
             inBaseMarkup.value = settings.baseMarkup;
             inBaseTax.value = settings.baseTax;
             inColMarkup.value = settings.colMarkup;
             inColTax.value = settings.colTax;
 
-            // Populate Products Dropdown
             products.forEach((prod, index) => {
                 let opt = document.createElement('option');
                 opt.value = index;
@@ -188,13 +191,12 @@
                 return;
             }
             
-            // Populate matching packs
             packSelect.disabled = false;
             packSelect.classList.remove('bg-gray-100');
             packSelect.classList.add('bg-gray-50');
 
             const selectedProduct = products[e.target.value];
-            selectedProduct.packs.forEach((pack, index) => {
+            selectedProduct.packs.forEach((pack) => {
                 let opt = document.createElement('option');
                 opt.value = pack.price;
                 opt.textContent = `${pack.size} - (₹${pack.price.toFixed(2)})`;
@@ -206,7 +208,20 @@
         packSelect.addEventListener('change', calculate);
         shadeSelect.addEventListener('change', calculate);
 
-        // Settings Save Logic
+        // Reset Button Logic added here
+        resetBtn.addEventListener('click', () => {
+            productSelect.value = "";
+            
+            packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
+            packSelect.disabled = true;
+            packSelect.classList.remove('bg-gray-50');
+            packSelect.classList.add('bg-gray-100');
+            
+            shadeSelect.value = "0";
+            
+            calculate(); 
+        });
+
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
             settings = {
                 baseMarkup: parseFloat(inBaseMarkup.value) || 0,
@@ -216,10 +231,9 @@
             };
             localStorage.setItem('paintAppConfig', JSON.stringify(settings));
             alert("Settings Saved!");
-            calculate(); // Recalculate if anything was selected
+            calculate(); 
         });
 
-        // Navigation Logic
         const calcView = document.getElementById('calculatorView');
         const setView = document.getElementById('settingsView');
         const btnCalc = document.getElementById('navCalcBtn');
@@ -248,30 +262,22 @@
             btnCalc.classList.add('border-transparent');
         });
 
-        // 5. CORE MATHEMATICS (Exactly matching your screenshot)
+        // 5. CORE MATHEMATICS
         function calculate() {
             let dealerPrice = parseFloat(packSelect.value) || 0;
             let rawColCost = parseFloat(shadeSelect.value) || 0;
 
-            // Update Dealer Label
             dealerLabel.textContent = `₹${dealerPrice.toFixed(2)}`;
 
-            // Base Math: Price * (1 + Markup%) * (1 + Tax%)
             let finalBase = dealerPrice * (1 + (settings.baseMarkup / 100)) * (1 + (settings.baseTax / 100));
-            
-            // Colourant Math
             let finalCol = rawColCost * (1 + (settings.colMarkup / 100)) * (1 + (settings.colTax / 100));
-
-            // Final Total
             let finalPrice = finalBase + finalCol;
 
-            // Update UI Labels
             baseLabel.textContent = `₹${finalBase.toFixed(2)}`;
             colLabel.textContent = `₹${finalCol.toFixed(2)}`;
             finalLabel.textContent = `₹${finalPrice.toFixed(2)}`;
         }
 
-        // Run on start
         initApp();
     </script>
 </body>
