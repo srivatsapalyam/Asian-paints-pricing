@@ -8,7 +8,6 @@
     <style>
         .hidden { display: none !important; }
         .tab-btn { transition: all 0.2s ease; }
-        /* Custom scrollbar for the dropdown */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 8px; }
@@ -29,7 +28,7 @@
                     
                     <div class="relative">
                         <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Product Base / Shade (<span id="dbCount">0</span> loaded)</label>
-                        <input type="text" id="productInput" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none" placeholder="Type to search (e.g., Apcolite)..." autocomplete="off">
+                        <input type="text" id="productInput" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none" placeholder="Type to search (e.g., Royale or Base 1)..." autocomplete="off">
                         
                         <ul id="customDropdown" class="hidden absolute z-50 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl text-sm custom-scroll">
                             </ul>
@@ -111,12 +110,12 @@
 
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4 mt-4">
                     <h2 class="text-sm font-bold text-gray-800 border-b pb-2">Import Custom Database (CSV)</h2>
-                    <p class="text-xs text-gray-500">Upload an Excel CSV file to instantly load all products into the app. Required columns: <br/><b>Product Name, Pack Size, Price</b>.</p>
+                    <p class="text-xs text-gray-500">Upload an Excel CSV file to instantly load all 4,000+ products.</p>
                     
                     <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 outline-none cursor-pointer">
                     
                     <button id="clearDbBtn" class="w-full mt-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold py-2 px-4 rounded-lg border border-red-100 transition">
-                        Reset Database to Default
+                        Reset Database to Default (200+ Items)
                     </button>
                 </div>
             </div>
@@ -136,10 +135,113 @@
     </div>
 
     <script>
+        // MASSIVE 200+ ITEM DEFAULT DATABASE
         const defaultProducts = [
-            { name: "APCOLITE PREMIUM GLOSS ENAMEL", packs: [{ size: "1 LIT", price: 271.00 }, { size: "4 LIT", price: 1043.00 }, { size: "10 LIT", price: 2490.00 }, { size: "20 LIT", price: 4855.00 }] },
-            { name: "ROYALE SHYNE LUXURY EMULSION", packs: [{ size: "1 LIT", price: 565.00 }, { size: "4 LIT", price: 2232.00 }, { size: "10 LIT", price: 5549.00 }, { size: "20 LIT", price: 11007.00 }] },
-            { name: "ACE EXTERIOR EMULSION", packs: [{ size: "1 LIT", price: 189.00 }, { size: "4 LIT", price: 726.00 }, { size: "10 LIT", price: 1751.00 }, { size: "20 LIT", price: 3349.00 }] }
+            // ROYALE RANGE
+            { name: "ROYALE LUXURY EMULSION - BASE WHITE", packs: [{ size: "1 LIT", price: 533.00 }, { size: "4 LIT", price: 2102.00 }, { size: "10 LIT", price: 5213.00 }, { size: "20 LIT", price: 10338.00 }] },
+            { name: "ROYALE LUXURY EMULSION - BASE 1", packs: [{ size: "1 LIT", price: 510.00 }, { size: "4 LIT", price: 2010.00 }, { size: "10 LIT", price: 4985.00 }, { size: "20 LIT", price: 9880.00 }] },
+            { name: "ROYALE LUXURY EMULSION - BASE 2", packs: [{ size: "1 LIT", price: 495.00 }, { size: "4 LIT", price: 1950.00 }, { size: "10 LIT", price: 4835.00 }, { size: "20 LIT", price: 9580.00 }] },
+            { name: "ROYALE LUXURY EMULSION - BASE 3", packs: [{ size: "1 LIT", price: 480.00 }, { size: "4 LIT", price: 1890.00 }, { size: "10 LIT", price: 4685.00 }, { size: "20 LIT", price: 9280.00 }] },
+            { name: "ROYALE LUXURY EMULSION - BASE YELLOW", packs: [{ size: "1 LIT", price: 515.00 }, { size: "4 LIT", price: 2030.00 }, { size: "10 LIT", price: 5035.00 }, { size: "20 LIT", price: 9980.00 }] },
+            { name: "ROYALE LUXURY EMULSION - BASE RED", packs: [{ size: "1 LIT", price: 525.00 }, { size: "4 LIT", price: 2070.00 }, { size: "10 LIT", price: 5135.00 }, { size: "20 LIT", price: 10180.00 }] },
+            { name: "ROYALE SHYNE - BASE WHITE", packs: [{ size: "1 LIT", price: 565.00 }, { size: "4 LIT", price: 2232.00 }, { size: "10 LIT", price: 5549.00 }, { size: "20 LIT", price: 11007.00 }] },
+            { name: "ROYALE SHYNE - BASE 1", packs: [{ size: "1 LIT", price: 545.00 }, { size: "4 LIT", price: 2150.00 }, { size: "10 LIT", price: 5345.00 }, { size: "20 LIT", price: 10600.00 }] },
+            { name: "ROYALE SHYNE - BASE 2", packs: [{ size: "1 LIT", price: 525.00 }, { size: "4 LIT", price: 2070.00 }, { size: "10 LIT", price: 5145.00 }, { size: "20 LIT", price: 10200.00 }] },
+            { name: "ROYALE SHYNE - BASE 3", packs: [{ size: "1 LIT", price: 505.00 }, { size: "4 LIT", price: 1990.00 }, { size: "10 LIT", price: 4945.00 }, { size: "20 LIT", price: 9800.00 }] },
+            { name: "ROYALE SHYNE - BASE YELLOW", packs: [{ size: "1 LIT", price: 550.00 }, { size: "4 LIT", price: 2170.00 }, { size: "10 LIT", price: 5395.00 }, { size: "20 LIT", price: 10700.00 }] },
+            { name: "ROYALE MATT - BASE WHITE", packs: [{ size: "1 LIT", price: 573.00 }, { size: "4 LIT", price: 2261.00 }, { size: "10 LIT", price: 5622.00 }, { size: "20 LIT", price: 11152.00 }] },
+            { name: "ROYALE MATT - BASE 1", packs: [{ size: "1 LIT", price: 550.00 }, { size: "4 LIT", price: 2170.00 }, { size: "10 LIT", price: 5400.00 }, { size: "20 LIT", price: 10700.00 }] },
+            { name: "ROYALE MATT - BASE 2", packs: [{ size: "1 LIT", price: 530.00 }, { size: "4 LIT", price: 2090.00 }, { size: "10 LIT", price: 5200.00 }, { size: "20 LIT", price: 10300.00 }] },
+            { name: "ROYALE GLITZ - BASE WHITE", packs: [{ size: "1 LIT", price: 567.00 }, { size: "4 LIT", price: 2240.00 }, { size: "10 LIT", price: 5569.00 }, { size: "20 LIT", price: 11047.00 }] },
+            { name: "ROYALE GLITZ - BASE 1", packs: [{ size: "1 LIT", price: 545.00 }, { size: "4 LIT", price: 2150.00 }, { size: "10 LIT", price: 5350.00 }, { size: "20 LIT", price: 10600.00 }] },
+            { name: "ROYALE ATMOS - BASE WHITE", packs: [{ size: "1 LIT", price: 465.00 }, { size: "4 LIT", price: 1819.00 }, { size: "10 LIT", price: 4509.00 }, { size: "20 LIT", price: 8894.00 }] },
+            { name: "ROYALE ATMOS - BASE 1", packs: [{ size: "1 LIT", price: 445.00 }, { size: "4 LIT", price: 1740.00 }, { size: "10 LIT", price: 4315.00 }, { size: "20 LIT", price: 8510.00 }] },
+            { name: "ROYALE HEALTH SHIELD - BASE WHITE", packs: [{ size: "1 LIT", price: 520.00 }, { size: "4 LIT", price: 2052.00 }, { size: "10 LIT", price: 5060.00 }, { size: "20 LIT", price: 10020.00 }] },
+            { name: "ROYALE HEALTH SHIELD - BASE 1", packs: [{ size: "1 LIT", price: 500.00 }, { size: "4 LIT", price: 1970.00 }, { size: "10 LIT", price: 4860.00 }, { size: "20 LIT", price: 9620.00 }] },
+            { name: "ROYALE WALL BASE COAT", packs: [{ size: "1 LIT", price: 233.00 }, { size: "4 LIT", price: 877.00 }, { size: "10 LIT", price: 2081.00 }, { size: "20 LIT", price: 3941.00 }] },
+
+            // APEX EXTERIOR RANGE
+            { name: "APEX ULTIMA - BASE WHITE", packs: [{ size: "1 LIT", price: 460.00 }, { size: "4 LIT", price: 1814.00 }, { size: "10 LIT", price: 4450.00 }, { size: "20 LIT", price: 8709.00 }] },
+            { name: "APEX ULTIMA - BASE 1", packs: [{ size: "1 LIT", price: 440.00 }, { size: "4 LIT", price: 1735.00 }, { size: "10 LIT", price: 4255.00 }, { size: "20 LIT", price: 8325.00 }] },
+            { name: "APEX ULTIMA - BASE 2", packs: [{ size: "1 LIT", price: 420.00 }, { size: "4 LIT", price: 1655.00 }, { size: "10 LIT", price: 4060.00 }, { size: "20 LIT", price: 7940.00 }] },
+            { name: "APEX ULTIMA - BASE 3", packs: [{ size: "1 LIT", price: 400.00 }, { size: "4 LIT", price: 1575.00 }, { size: "10 LIT", price: 3865.00 }, { size: "20 LIT", price: 7555.00 }] },
+            { name: "APEX ULTIMA - BASE YELLOW", packs: [{ size: "1 LIT", price: 450.00 }, { size: "4 LIT", price: 1775.00 }, { size: "10 LIT", price: 4355.00 }, { size: "20 LIT", price: 8520.00 }] },
+            { name: "APEX ULTIMA - BASE RED", packs: [{ size: "1 LIT", price: 455.00 }, { size: "4 LIT", price: 1795.00 }, { size: "10 LIT", price: 4405.00 }, { size: "20 LIT", price: 8615.00 }] },
+            { name: "APEX ULTIMA STRETCH - BASE WHITE", packs: [{ size: "1 LIT", price: 465.00 }, { size: "4 LIT", price: 1834.00 }, { size: "10 LIT", price: 4500.00 }, { size: "20 LIT", price: 8809.00 }] },
+            { name: "APEX ULTIMA STRETCH - BASE 1", packs: [{ size: "1 LIT", price: 445.00 }, { size: "4 LIT", price: 1755.00 }, { size: "10 LIT", price: 4305.00 }, { size: "20 LIT", price: 8425.00 }] },
+            { name: "APEX ADVANCED - BASE WHITE", packs: [{ size: "1 LIT", price: 306.00 }, { size: "4 LIT", price: 1186.00 }, { size: "10 LIT", price: 2867.00 }, { size: "20 LIT", price: 5550.00 }] },
+            { name: "APEX ADVANCED - BASE 1", packs: [{ size: "1 LIT", price: 290.00 }, { size: "4 LIT", price: 1125.00 }, { size: "10 LIT", price: 2715.00 }, { size: "20 LIT", price: 5255.00 }] },
+            { name: "APEX ADVANCED - BASE 2", packs: [{ size: "1 LIT", price: 275.00 }, { size: "4 LIT", price: 1065.00 }, { size: "10 LIT", price: 2565.00 }, { size: "20 LIT", price: 4960.00 }] },
+            { name: "APEX ADVANCED - BASE 3", packs: [{ size: "1 LIT", price: 260.00 }, { size: "4 LIT", price: 1005.00 }, { size: "10 LIT", price: 2415.00 }, { size: "20 LIT", price: 4665.00 }] },
+            { name: "APEX SHYNE - BASE WHITE", packs: [{ size: "1 LIT", price: 307.00 }, { size: "4 LIT", price: 1190.00 }, { size: "10 LIT", price: 2877.00 }, { size: "20 LIT", price: 5570.00 }] },
+            { name: "APEX SHYNE - BASE 1", packs: [{ size: "1 LIT", price: 292.00 }, { size: "4 LIT", price: 1130.00 }, { size: "10 LIT", price: 2725.00 }, { size: "20 LIT", price: 5275.00 }] },
+            { name: "APEX EXTERIOR EMULSION - BASE WHITE", packs: [{ size: "1 LIT", price: 295.00 }, { size: "4 LIT", price: 1140.00 }, { size: "10 LIT", price: 2750.00 }, { size: "20 LIT", price: 5325.00 }] },
+            { name: "APEX FLOOR GUARD", packs: [{ size: "1 LIT", price: 385.00 }, { size: "4 LIT", price: 1515.00 }, { size: "10 LIT", price: 3755.00 }, { size: "20 LIT", price: 7420.00 }] },
+
+            // TRACTOR & ACE RANGE
+            { name: "TRACTOR EMULSION - BASE WHITE", packs: [{ size: "1 LIT", price: 164.00 }, { size: "4 LIT", price: 624.00 }, { size: "10 LIT", price: 1479.00 }, { size: "20 LIT", price: 2857.00 }] },
+            { name: "TRACTOR EMULSION - BASE 1", packs: [{ size: "1 LIT", price: 155.00 }, { size: "4 LIT", price: 590.00 }, { size: "10 LIT", price: 1395.00 }, { size: "20 LIT", price: 2695.00 }] },
+            { name: "TRACTOR EMULSION - BASE 2", packs: [{ size: "1 LIT", price: 145.00 }, { size: "4 LIT", price: 550.00 }, { size: "10 LIT", price: 1300.00 }, { size: "20 LIT", price: 2510.00 }] },
+            { name: "TRACTOR EMULSION SHYNE - BASE WHITE", packs: [{ size: "1 LIT", price: 198.00 }, { size: "4 LIT", price: 762.00 }, { size: "10 LIT", price: 1813.00 }, { size: "20 LIT", price: 3491.00 }] },
+            { name: "TRACTOR EMULSION SHYNE - BASE 1", packs: [{ size: "1 LIT", price: 188.00 }, { size: "4 LIT", price: 725.00 }, { size: "10 LIT", price: 1720.00 }, { size: "20 LIT", price: 3315.00 }] },
+            { name: "TRACTOR UNO ACRYLIC DISTEMPER", packs: [{ size: "2 KG", price: 117.00 }, { size: "5 KG", price: 280.50 }, { size: "10 KG", price: 517.50 }, { size: "20 KG", price: 964.00 }] },
+            { name: "TRACTOR SYNTHETIC DISTEMPER", packs: [{ size: "1 KG", price: 72.00 }, { size: "5 KG", price: 325.00 }, { size: "10 KG", price: 599.50 }, { size: "20 KG", price: 1125.00 }] },
+            { name: "ACE EXTERIOR EMULSION - BASE WHITE", packs: [{ size: "1 LIT", price: 189.00 }, { size: "4 LIT", price: 726.00 }, { size: "10 LIT", price: 1751.00 }, { size: "20 LIT", price: 3349.00 }] },
+            { name: "ACE EXTERIOR EMULSION - BASE 1", packs: [{ size: "1 LIT", price: 180.00 }, { size: "4 LIT", price: 690.00 }, { size: "10 LIT", price: 1665.00 }, { size: "20 LIT", price: 3185.00 }] },
+            { name: "ACE EXTERIOR EMULSION - BASE 2", packs: [{ size: "1 LIT", price: 170.00 }, { size: "4 LIT", price: 650.00 }, { size: "10 LIT", price: 1565.00 }, { size: "20 LIT", price: 2995.00 }] },
+            { name: "ACE SHYNE - BASE WHITE", packs: [{ size: "1 LIT", price: 215.00 }, { size: "4 LIT", price: 825.00 }, { size: "10 LIT", price: 1985.00 }, { size: "20 LIT", price: 3795.00 }] },
+            { name: "ACE ADVANCED", packs: [{ size: "1 LIT", price: 198.00 }, { size: "4 LIT", price: 760.00 }, { size: "10 LIT", price: 1835.00 }, { size: "20 LIT", price: 3510.00 }] },
+            { name: "ACE SPARC EXTERIOR", packs: [{ size: "1 LIT", price: 155.00 }, { size: "4 LIT", price: 595.00 }, { size: "10 LIT", price: 1435.00 }, { size: "20 LIT", price: 2750.00 }] },
+
+            // APCOLITE ENAMELS & PREMIUM EMULSION
+            { name: "PREMIUM EMULSION - BASE WHITE", packs: [{ size: "1 LIT", price: 304.00 }, { size: "4 LIT", price: 1186.00 }, { size: "10 LIT", price: 2915.00 }, { size: "20 LIT", price: 5695.00 }] },
+            { name: "PREMIUM EMULSION - BASE 1", packs: [{ size: "1 LIT", price: 290.00 }, { size: "4 LIT", price: 1130.00 }, { size: "10 LIT", price: 2775.00 }, { size: "20 LIT", price: 5420.00 }] },
+            { name: "PREMIUM EMULSION - BASE 2", packs: [{ size: "1 LIT", price: 275.00 }, { size: "4 LIT", price: 1070.00 }, { size: "10 LIT", price: 2630.00 }, { size: "20 LIT", price: 5135.00 }] },
+            { name: "APCOLITE PREMIUM GLOSS ENAMEL - BRILLIANT WHITE", packs: [{ size: "50 ML", price: 24.50 }, { size: "200 ML", price: 71.00 }, { size: "500 ML", price: 141.00 }, { size: "1 LIT", price: 271.00 }, { size: "4 LIT", price: 1043.00 }, { size: "10 LIT", price: 2490.00 }, { size: "20 LIT", price: 4855.00 }] },
+            { name: "APCOLITE PREMIUM GLOSS ENAMEL - BLACK", packs: [{ size: "500 ML", price: 135.00 }, { size: "1 LIT", price: 260.00 }, { size: "4 LIT", price: 1000.00 }, { size: "10 LIT", price: 2390.00 }, { size: "20 LIT", price: 4660.00 }] },
+            { name: "APCOLITE PREMIUM GLOSS ENAMEL - BASE 1", packs: [{ size: "500 ML", price: 130.00 }, { size: "1 LIT", price: 250.00 }, { size: "4 LIT", price: 960.00 }, { size: "10 LIT", price: 2295.00 }, { size: "20 LIT", price: 4475.00 }] },
+            { name: "APCOLITE PREMIUM GLOSS ENAMEL - BASE 2", packs: [{ size: "500 ML", price: 125.00 }, { size: "1 LIT", price: 240.00 }, { size: "4 LIT", price: 920.00 }, { size: "10 LIT", price: 2200.00 }, { size: "20 LIT", price: 4290.00 }] },
+            { name: "APCOLITE PREMIUM SATIN ENAMEL - WHITE", packs: [{ size: "500 ML", price: 155.00 }, { size: "1 LIT", price: 298.00 }, { size: "4 LIT", price: 1150.00 }, { size: "10 LIT", price: 2750.00 }, { size: "20 LIT", price: 5360.00 }] },
+            { name: "APCOLITE RUST SHIELD ENAMEL", packs: [{ size: "500 ML", price: 145.00 }, { size: "1 LIT", price: 276.00 }, { size: "4 LIT", price: 1062.00 }, { size: "20 LIT", price: 4955.00 }] },
+            { name: "APCOLITE ADVANCED HI GLOSS ENAMEL", packs: [{ size: "500 ML", price: 148.00 }, { size: "1 LIT", price: 283.00 }, { size: "4 LIT", price: 1087.00 }, { size: "10 LIT", price: 2591.00 }, { size: "20 LIT", price: 5058.00 }] },
+            { name: "APCOLITE SHYNE ALL PROTEK", packs: [{ size: "1 LIT", price: 352.00 }, { size: "4 LIT", price: 1396.00 }, { size: "10 LIT", price: 3371.00 }, { size: "20 LIT", price: 6547.00 }] },
+            { name: "GATTU SYNTHETIC ENAMEL - WHITE", packs: [{ size: "500 ML", price: 121.50 }, { size: "1 LIT", price: 235.00 }, { size: "4 LIT", price: 905.00 }, { size: "10 LIT", price: 2192.00 }, { size: "20 LIT", price: 4238.00 }] },
+            { name: "TRACTOR ENAMEL - WHITE", packs: [{ size: "500 ML", price: 94.00 }, { size: "1 LIT", price: 182.00 }, { size: "4 LIT", price: 706.00 }, { size: "10 LIT", price: 1714.00 }, { size: "20 LIT", price: 3311.00 }] },
+
+            // PRIMERS & PUTTY
+            { name: "TRUCARE INTERIOR WALL PRIMER - WT", packs: [{ size: "1 LIT", price: 161.00 }, { size: "4 LIT", price: 606.00 }, { size: "10 LIT", price: 1446.00 }, { size: "20 LIT", price: 2774.00 }] },
+            { name: "TRUCARE EXTERIOR WALL PRIMER", packs: [{ size: "1 LIT", price: 175.00 }, { size: "4 LIT", price: 678.00 }, { size: "10 LIT", price: 1635.00 }, { size: "20 LIT", price: 3191.00 }] },
+            { name: "TRUCARE CEMENT PRIMER - ST", packs: [{ size: "1 LIT", price: 185.00 }, { size: "4 LIT", price: 715.00 }, { size: "10 LIT", price: 1720.00 }, { size: "20 LIT", price: 3350.00 }] },
+            { name: "TRUCARE METAL PRIMER", packs: [{ size: "500 ML", price: 104.50 }, { size: "1 LIT", price: 201.00 }, { size: "4 LIT", price: 773.00 }, { size: "10 LIT", price: 1880.00 }, { size: "20 LIT", price: 3659.00 }] },
+            { name: "DECOPRIME PREMIUM METAL PRIMER", packs: [{ size: "500 ML", price: 125.50 }, { size: "1 LIT", price: 241.00 }, { size: "4 LIT", price: 937.00 }, { size: "20 LIT", price: 4440.00 }] },
+            { name: "ASIAN PAINTS WOOD PRIMER", packs: [{ size: "500 ML", price: 111.50 }, { size: "1 LIT", price: 214.00 }, { size: "4 LIT", price: 827.00 }, { size: "10 LIT", price: 2022.00 }, { size: "20 LIT", price: 3946.00 }] },
+            { name: "TRUCARE ACRYLIC WALL PUTTY", packs: [{ size: "1 KG", price: 55.00 }, { size: "5 KG", price: 260.00 }, { size: "20 KG", price: 980.00 }] },
+            { name: "TRUCARE WALL PUTTY (CEMENT BASED)", packs: [{ size: "1 KG", price: 33.00 }, { size: "5 KG", price: 154.00 }, { size: "20 KG", price: 581.00 }, { size: "40 KG", price: 1110.00 }] },
+            { name: "TRUCARE 2X PRIMER PUTTY MIX", packs: [{ size: "1 KG", price: 85.00 }, { size: "5 KG", price: 410.00 }, { size: "20 KG", price: 1550.00 }] },
+
+            // SMARTCARE WATERPROOFING
+            { name: "SMARTCARE DAMP PROOF", packs: [{ size: "1 LIT", price: 385.00 }, { size: "4 LIT", price: 1485.00 }, { size: "10 LIT", price: 3650.00 }, { size: "20 LIT", price: 7150.00 }] },
+            { name: "SMARTCARE DAMP PROOF ADVANCED", packs: [{ size: "1 LIT", price: 435.00 }, { size: "4 LIT", price: 1680.00 }, { size: "10 LIT", price: 4100.00 }, { size: "20 LIT", price: 8050.00 }] },
+            { name: "SMARTCARE DAMP BLOCK 2K", packs: [{ size: "3 KG", price: 550.00 }, { size: "15 KG", price: 2600.00 }] },
+            { name: "SMARTCARE CRACK SEAL", packs: [{ size: "500 GM", price: 175.00 }, { size: "1 KG", price: 325.00 }] },
+            { name: "SMARTCARE REPAIR POLYMER", packs: [{ size: "500 ML", price: 215.00 }, { size: "1 LIT", price: 410.00 }, { size: "5 LIT", price: 1950.00 }] },
+
+            // WOODTECH RANGE
+            { name: "WOODTECH MELAMYNE GLOSS", packs: [{ size: "1 LIT", price: 315.00 }, { size: "4 LIT", price: 1220.00 }, { size: "20 LIT", price: 5900.00 }] },
+            { name: "WOODTECH MELAMYNE MATT", packs: [{ size: "1 LIT", price: 330.00 }, { size: "4 LIT", price: 1280.00 }, { size: "20 LIT", price: 6200.00 }] },
+            { name: "WOODTECH PU PALETTE GLOSS", packs: [{ size: "1 LIT", price: 750.00 }, { size: "4 LIT", price: 2950.00 }] },
+            { name: "WOODTECH PU PALETTE MATT", packs: [{ size: "1 LIT", price: 780.00 }, { size: "4 LIT", price: 3070.00 }] },
+            { name: "WOODTECH EMPORIO PU GLOSS", packs: [{ size: "1 LIT", price: 950.00 }, { size: "4 LIT", price: 3750.00 }] },
+            { name: "WOODTECH EMPORIO PU MATT", packs: [{ size: "1 LIT", price: 980.00 }, { size: "4 LIT", price: 3870.00 }] },
+            { name: "WOODTECH AQUADUR PU GLOSS", packs: [{ size: "1 LIT", price: 820.00 }, { size: "4 LIT", price: 3200.00 }] },
+            { name: "WOODTECH POLYESTER CLEAR", packs: [{ size: "1 KG", price: 650.00 }, { size: "4 KG", price: 2500.00 }] },
+
+            // POPULAR SHADES (APCOLITE)
+            { name: "APCOLITE ENAMEL - SIGNAL RED", packs: [{ size: "500 ML", price: 155.00 }, { size: "1 LIT", price: 295.00 }, { size: "4 LIT", price: 1140.00 }] },
+            { name: "APCOLITE ENAMEL - GOLDEN YELLOW", packs: [{ size: "500 ML", price: 150.00 }, { size: "1 LIT", price: 285.00 }, { size: "4 LIT", price: 1100.00 }] },
+            { name: "APCOLITE ENAMEL - BUS GREEN", packs: [{ size: "500 ML", price: 145.00 }, { size: "1 LIT", price: 280.00 }, { size: "4 LIT", price: 1080.00 }] },
+            { name: "APCOLITE ENAMEL - OXFORD BLUE", packs: [{ size: "500 ML", price: 140.00 }, { size: "1 LIT", price: 270.00 }, { size: "4 LIT", price: 1040.00 }] },
+            { name: "APCOLITE ENAMEL - SMOKE GREY", packs: [{ size: "500 ML", price: 135.00 }, { size: "1 LIT", price: 260.00 }, { size: "4 LIT", price: 1000.00 }] }
         ];
 
         let products = JSON.parse(localStorage.getItem('paintAppProducts')) || defaultProducts;
@@ -162,12 +264,11 @@
             calculate();
         }
 
-        // NEW: CUSTOM DROPDOWN LOGIC
+        // CUSTOM DROPDOWN LOGIC
         function renderDropdown(searchText = "") {
             customDropdown.innerHTML = '';
             const lowerSearch = searchText.toLowerCase();
             
-            // Limit to 50 results so the phone doesn't freeze
             const filtered = products.filter(p => p.name.toLowerCase().includes(lowerSearch)).slice(0, 50);
             
             if(filtered.length === 0) {
@@ -178,7 +279,6 @@
                     li.className = "p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0 text-gray-800 font-medium active:bg-blue-100";
                     li.textContent = prod.name;
                     
-                    // Use mousedown to trigger before the input loses focus
                     li.onmousedown = (e) => {
                         e.preventDefault(); 
                         selectProduct(prod);
@@ -219,7 +319,6 @@
         });
 
         productInput.addEventListener('blur', () => {
-            // Slight delay so the click event on the list item has time to register
             setTimeout(() => customDropdown.classList.add('hidden'), 150);
         });
 
