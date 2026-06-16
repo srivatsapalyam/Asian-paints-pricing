@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Price Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Hide element utility */
+        .hidden { display: none !important; }
+        /* Smooth transitions */
+        .tab-btn { transition: all 0.2s ease; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased selection:bg-blue-200">
+
+    <div class="max-w-md mx-auto bg-gray-50 min-h-screen shadow-xl relative overflow-hidden flex flex-col">
+        
+        <header class="bg-blue-600 text-white p-4 shadow-md z-10">
+            <h1 class="text-lg font-semibold truncate" id="headerTitle">Price Calculator</h1>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 pb-20">
+            
+            <div id="calculatorView" class="space-y-4">
+                
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Product Base</label>
+                        <select id="productSelect" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                            <option value="">-- Select Product --</option>
+                            </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Pack Size</label>
+                        <select id="packSelect" disabled class="w-full bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none disabled:opacity-50">
+                            <option value="">-- Select Pack Size --</option>
+                            </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Formulation / Shade</label>
+                        <select id="shadeSelect" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                            <option value="0">IVORY** 0315 (₹0.00 colorant)</option>
+                            <option value="50">DEEP ORANGE (₹50.00 colorant)</option>
+                            </select>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2">Calculation Results</h2>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center text-gray-600">
+                            <span>Dealer Price (from PDF)</span>
+                            <span id="dealerPriceLabel" class="font-medium text-gray-900">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-gray-600">
+                            <span>Calculated Base Price</span>
+                            <span id="basePriceLabel" class="font-medium text-gray-900">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-gray-600">
+                            <span>Calculated Colourant Price</span>
+                            <span id="colourantPriceLabel" class="font-medium text-gray-900">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-dashed border-gray-300">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">Final Price</span>
+                            <span id="finalPriceLabel" class="text-2xl font-black text-blue-600">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="settingsView" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                    <h2 class="text-sm font-bold text-gray-800 mb-2 border-b pb-2">Formula Settings (%)</h2>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Base MarkUp %</label>
+                        <input type="number" id="baseMarkupInput" step="0.1" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Base Tax %</label>
+                        <input type="number" id="baseTaxInput" step="0.1" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Colourant MarkUp %</label>
+                        <input type="number" id="colMarkupInput" step="0.1" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Colourant Tax %</label>
+                        <input type="number" id="colTaxInput" step="0.1" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 outline-none">
+                    </div>
+
+                    <button id="saveSettingsBtn" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 flex text-xs font-medium text-gray-500">
+            <button id="navCalcBtn" class="flex-1 py-4 text-center text-blue-600 border-t-2 border-blue-600 bg-blue-50 tab-btn">
+                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                Calculator
+            </button>
+            <button id="navSetBtn" class="flex-1 py-4 text-center border-t-2 border-transparent hover:text-blue-600 hover:bg-gray-50 tab-btn">
+                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Settings
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // 1. DATA (Extracted from your PDF)
+        const products = [
+            { name: "ACE EXTERIOR EMULSION (AC2GTEL)", packs: [
+                { size: "4 LIT", price: 726.00 },
+                { size: "10 LIT", price: 1751.00 },
+                { size: "20 LIT", price: 3349.00 }
+            ]},
+            { name: "AP APCOLITE ADVANCED SHYNE", packs: [
+                { size: "1 LIT", price: 335.00 },
+                { size: "10 LIT", price: 3201.00 },
+                { size: "20 LIT", price: 6207.00 }
+            ]},
+            { name: "APCOLITE PREMIUM GLOSS ENAMEL", packs: [
+                { size: "1 LIT (Brilliant White)", price: 271.00 },
+                { size: "4 LIT (Brilliant White)", price: 1043.00 }
+            ]}
+        ];
+
+        // 2. SETTINGS MANAGEMENT (Uses LocalStorage to save your Dad's settings)
+        let settings = JSON.parse(localStorage.getItem('paintAppConfig')) || {
+            baseMarkup: 6.0,
+            baseTax: 18.0,
+            colMarkup: 100.0,
+            colTax: 0.0
+        };
+
+        // DOM Elements
+        const productSelect = document.getElementById('productSelect');
+        const packSelect = document.getElementById('packSelect');
+        const shadeSelect = document.getElementById('shadeSelect');
+        
+        // Output Labels
+        const dealerLabel = document.getElementById('dealerPriceLabel');
+        const baseLabel = document.getElementById('basePriceLabel');
+        const colLabel = document.getElementById('colourantPriceLabel');
+        const finalLabel = document.getElementById('finalPriceLabel');
+
+        // Settings Inputs
+        const inBaseMarkup = document.getElementById('baseMarkupInput');
+        const inBaseTax = document.getElementById('baseTaxInput');
+        const inColMarkup = document.getElementById('colMarkupInput');
+        const inColTax = document.getElementById('colTaxInput');
+
+        // 3. INITIALIZATION
+        function initApp() {
+            // Load settings into inputs
+            inBaseMarkup.value = settings.baseMarkup;
+            inBaseTax.value = settings.baseTax;
+            inColMarkup.value = settings.colMarkup;
+            inColTax.value = settings.colTax;
+
+            // Populate Products Dropdown
+            products.forEach((prod, index) => {
+                let opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = prod.name;
+                productSelect.appendChild(opt);
+            });
+        }
+
+        // 4. EVENT LISTENERS
+        productSelect.addEventListener('change', (e) => {
+            packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
+            if(e.target.value === "") {
+                packSelect.disabled = true;
+                calculate();
+                return;
+            }
+            
+            // Populate matching packs
+            packSelect.disabled = false;
+            packSelect.classList.remove('bg-gray-100');
+            packSelect.classList.add('bg-gray-50');
+
+            const selectedProduct = products[e.target.value];
+            selectedProduct.packs.forEach((pack, index) => {
+                let opt = document.createElement('option');
+                opt.value = pack.price;
+                opt.textContent = `${pack.size} - (₹${pack.price.toFixed(2)})`;
+                packSelect.appendChild(opt);
+            });
+            calculate();
+        });
+
+        packSelect.addEventListener('change', calculate);
+        shadeSelect.addEventListener('change', calculate);
+
+        // Settings Save Logic
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            settings = {
+                baseMarkup: parseFloat(inBaseMarkup.value) || 0,
+                baseTax: parseFloat(inBaseTax.value) || 0,
+                colMarkup: parseFloat(inColMarkup.value) || 0,
+                colTax: parseFloat(inColTax.value) || 0
+            };
+            localStorage.setItem('paintAppConfig', JSON.stringify(settings));
+            alert("Settings Saved!");
+            calculate(); // Recalculate if anything was selected
+        });
+
+        // Navigation Logic
+        const calcView = document.getElementById('calculatorView');
+        const setView = document.getElementById('settingsView');
+        const btnCalc = document.getElementById('navCalcBtn');
+        const btnSet = document.getElementById('navSetBtn');
+        const headerTitle = document.getElementById('headerTitle');
+
+        btnCalc.addEventListener('click', () => {
+            calcView.classList.remove('hidden');
+            setView.classList.add('hidden');
+            headerTitle.textContent = "Price Calculator";
+            
+            btnCalc.classList.add('text-blue-600', 'border-blue-600', 'bg-blue-50');
+            btnCalc.classList.remove('border-transparent');
+            btnSet.classList.remove('text-blue-600', 'border-blue-600', 'bg-blue-50');
+            btnSet.classList.add('border-transparent');
+        });
+
+        btnSet.addEventListener('click', () => {
+            setView.classList.remove('hidden');
+            calcView.classList.add('hidden');
+            headerTitle.textContent = "Formula Settings";
+
+            btnSet.classList.add('text-blue-600', 'border-blue-600', 'bg-blue-50');
+            btnSet.classList.remove('border-transparent');
+            btnCalc.classList.remove('text-blue-600', 'border-blue-600', 'bg-blue-50');
+            btnCalc.classList.add('border-transparent');
+        });
+
+        // 5. CORE MATHEMATICS (Exactly matching your screenshot)
+        function calculate() {
+            let dealerPrice = parseFloat(packSelect.value) || 0;
+            let rawColCost = parseFloat(shadeSelect.value) || 0;
+
+            // Update Dealer Label
+            dealerLabel.textContent = `₹${dealerPrice.toFixed(2)}`;
+
+            // Base Math: Price * (1 + Markup%) * (1 + Tax%)
+            let finalBase = dealerPrice * (1 + (settings.baseMarkup / 100)) * (1 + (settings.baseTax / 100));
+            
+            // Colourant Math
+            let finalCol = rawColCost * (1 + (settings.colMarkup / 100)) * (1 + (settings.colTax / 100));
+
+            // Final Total
+            let finalPrice = finalBase + finalCol;
+
+            // Update UI Labels
+            baseLabel.textContent = `₹${finalBase.toFixed(2)}`;
+            colLabel.textContent = `₹${finalCol.toFixed(2)}`;
+            finalLabel.textContent = `₹${finalPrice.toFixed(2)}`;
+        }
+
+        // Run on start
+        initApp();
+    </script>
+</body>
+</html>
