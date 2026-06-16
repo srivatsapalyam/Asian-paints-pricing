@@ -8,6 +8,10 @@
     <style>
         .hidden { display: none !important; }
         .tab-btn { transition: all 0.2s ease; }
+        /* Custom scrollbar for the dropdown */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 8px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 antialiased selection:bg-blue-200">
@@ -23,10 +27,12 @@
             <div id="calculatorView" class="space-y-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
                     
-                    <div>
+                    <div class="relative">
                         <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Product Base / Shade (<span id="dbCount">0</span> loaded)</label>
-                        <input type="text" id="productInput" list="productList" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none" placeholder="Type to search (e.g., Apcolite or White)..." autocomplete="off">
-                        <datalist id="productList"></datalist>
+                        <input type="text" id="productInput" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none" placeholder="Type to search (e.g., Apcolite)..." autocomplete="off">
+                        
+                        <ul id="customDropdown" class="hidden absolute z-50 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl text-sm custom-scroll">
+                            </ul>
                     </div>
 
                     <div>
@@ -130,10 +136,8 @@
     </div>
 
     <script>
-        // 1. DEFAULT DATA
         const defaultProducts = [
             { name: "APCOLITE PREMIUM GLOSS ENAMEL", packs: [{ size: "1 LIT", price: 271.00 }, { size: "4 LIT", price: 1043.00 }, { size: "10 LIT", price: 2490.00 }, { size: "20 LIT", price: 4855.00 }] },
-            { name: "AP APCOLITE ADVANCED HI GLOSS ENAMEL", packs: [{ size: "1 LIT", price: 283.00 }, { size: "4 LIT", price: 1087.00 }, { size: "10 LIT", price: 2591.00 }, { size: "20 LIT", price: 5058.00 }] },
             { name: "ROYALE SHYNE LUXURY EMULSION", packs: [{ size: "1 LIT", price: 565.00 }, { size: "4 LIT", price: 2232.00 }, { size: "10 LIT", price: 5549.00 }, { size: "20 LIT", price: 11007.00 }] },
             { name: "ACE EXTERIOR EMULSION", packs: [{ size: "1 LIT", price: 189.00 }, { size: "4 LIT", price: 726.00 }, { size: "10 LIT", price: 1751.00 }, { size: "20 LIT", price: 3349.00 }] }
         ];
@@ -142,7 +146,7 @@
         let settings = JSON.parse(localStorage.getItem('paintAppConfig')) || { baseMarkup: 6.0, baseTax: 18.0, colMarkup: 100.0, colTax: 0.0 };
 
         const productInput = document.getElementById('productInput');
-        const productList = document.getElementById('productList');
+        const customDropdown = document.getElementById('customDropdown');
         const packSelect = document.getElementById('packSelect');
         const shadeSelect = document.getElementById('shadeSelect');
         
@@ -151,23 +155,75 @@
             document.getElementById('baseTaxInput').value = settings.baseTax;
             document.getElementById('colMarkupInput').value = settings.colMarkup;
             document.getElementById('colTaxInput').value = settings.colTax;
-
-            // Populate the Smart Search Bar
-            productList.innerHTML = '';
-            products.forEach((prod) => {
-                let opt = document.createElement('option');
-                opt.value = prod.name;
-                productList.appendChild(opt);
-            });
             document.getElementById('dbCount').textContent = products.length;
             
-            // Reset fields
             packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
             packSelect.disabled = true;
             calculate();
         }
 
-        // CSV PARSER (Upgraded with Junk Data Filter)
+        // NEW: CUSTOM DROPDOWN LOGIC
+        function renderDropdown(searchText = "") {
+            customDropdown.innerHTML = '';
+            const lowerSearch = searchText.toLowerCase();
+            
+            // Limit to 50 results so the phone doesn't freeze
+            const filtered = products.filter(p => p.name.toLowerCase().includes(lowerSearch)).slice(0, 50);
+            
+            if(filtered.length === 0) {
+                customDropdown.innerHTML = '<li class="p-3 text-gray-500 text-center italic">No products found</li>';
+            } else {
+                filtered.forEach(prod => {
+                    const li = document.createElement('li');
+                    li.className = "p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0 text-gray-800 font-medium active:bg-blue-100";
+                    li.textContent = prod.name;
+                    
+                    // Use mousedown to trigger before the input loses focus
+                    li.onmousedown = (e) => {
+                        e.preventDefault(); 
+                        selectProduct(prod);
+                    };
+                    customDropdown.appendChild(li);
+                });
+            }
+            customDropdown.classList.remove('hidden');
+        }
+
+        function selectProduct(prod) {
+            productInput.value = prod.name;
+            customDropdown.classList.add('hidden');
+            
+            packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
+            packSelect.disabled = false;
+            packSelect.classList.remove('bg-gray-100'); 
+            packSelect.classList.add('bg-gray-50');
+
+            prod.packs.forEach((pack) => {
+                let opt = document.createElement('option');
+                opt.value = pack.price;
+                opt.textContent = `${pack.size} - (₹${pack.price.toFixed(2)})`;
+                packSelect.appendChild(opt);
+            });
+            calculate();
+        }
+
+        productInput.addEventListener('focus', () => renderDropdown(productInput.value));
+        
+        productInput.addEventListener('input', (e) => {
+            renderDropdown(e.target.value);
+            if(e.target.value === "") {
+                packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
+                packSelect.disabled = true;
+                calculate();
+            }
+        });
+
+        productInput.addEventListener('blur', () => {
+            // Slight delay so the click event on the list item has time to register
+            setTimeout(() => customDropdown.classList.add('hidden'), 150);
+        });
+
+        // CSV PARSER
         function parseCSVRow(str) {
             let arr = []; let quote = false; let col = '';
             for (let i = 0; i < str.length; i++) {
@@ -196,7 +252,6 @@
                         const name = cols[0]; const size = cols[1];
                         const price = parseFloat(cols[2].replace(/[^0-9.]/g, ''));
 
-                        // NEW: Filter out junk rows (pure numbers or header text)
                         if(!isNaN(name) && name !== "") continue; 
                         if(name.toLowerCase() === "product name" || name.toLowerCase() === "dealer price") continue;
 
@@ -232,33 +287,17 @@
             }
         });
 
-        // APP LOGIC
-        productInput.addEventListener('input', (e) => {
-            const selectedName = e.target.value;
-            const selectedProduct = products.find(p => p.name === selectedName);
-            
-            packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
-            if(!selectedProduct) {
-                packSelect.disabled = true; calculate(); return;
-            }
-            
-            packSelect.disabled = false;
-            packSelect.classList.remove('bg-gray-100'); packSelect.classList.add('bg-gray-50');
-
-            selectedProduct.packs.forEach((pack) => {
-                let opt = document.createElement('option');
-                opt.value = pack.price;
-                opt.textContent = `${pack.size} - (₹${pack.price.toFixed(2)})`;
-                packSelect.appendChild(opt);
-            });
-            calculate();
-        });
-
         packSelect.addEventListener('change', calculate);
         shadeSelect.addEventListener('change', calculate);
 
         document.getElementById('resetBtn').addEventListener('click', () => {
-            productInput.value = ""; shadeSelect.value = "0"; initApp(); 
+            productInput.value = ""; 
+            shadeSelect.value = "0"; 
+            packSelect.innerHTML = '<option value="">-- Select Pack Size --</option>';
+            packSelect.disabled = true;
+            packSelect.classList.remove('bg-gray-50'); 
+            packSelect.classList.add('bg-gray-100');
+            calculate(); 
         });
 
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
